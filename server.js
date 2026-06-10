@@ -19,7 +19,7 @@ app.post("/claude", async (req, res) => {
         "anthropic-version": "2023-06-01"
       },
       body: JSON.stringify({
-        model: model || "claude-sonnet-4-20250514",
+        model: "claude-sonnet-4-5",
         max_tokens: max_tokens || 500,
         messages
       })
