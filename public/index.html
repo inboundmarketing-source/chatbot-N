@@ -305,12 +305,12 @@
 <div class="phone-frame">
   <div class="chat-header">
     <div class="back-arrow">‹</div>
-    <div class="avatar">🏥</div>
+    <div class="avatar">🦷</div>
     <div class="header-info">
       <div class="header-name">Dental Studio RD</div>
       <div class="header-status"><span class="status-dot"></span> En línea</div>
     </div>
-    <div class="demo-label">Demo</div>
+    <div class="demo-label">Asistente</div>
   </div>
 
   <div class="messages" id="messages">
@@ -420,7 +420,7 @@ function addMessage(text, role) {
   if (role === 'bot') {
     const av = document.createElement('div');
     av.className = 'msg-avatar';
-    av.textContent = '🏥';
+    av.textContent = '🦷';
     row.appendChild(av);
   }
 
@@ -463,7 +463,7 @@ function showTyping() {
 
   const av = document.createElement('div');
   av.className = 'msg-avatar';
-  av.textContent = '🏥';
+  av.textContent = '🦷';
   row.appendChild(av);
 
   const bubble = document.createElement('div');
