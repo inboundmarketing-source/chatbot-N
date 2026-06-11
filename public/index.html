@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ClinicaBot — Demo</title>
+<title>Dental Studio RD — Asistente de Citas</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -307,7 +307,7 @@
     <div class="back-arrow">‹</div>
     <div class="avatar">🏥</div>
     <div class="header-info">
-      <div class="header-name">ClinicaBot — Dra. Pérez</div>
+      <div class="header-name">Dental Studio RD</div>
       <div class="header-status"><span class="status-dot"></span> En línea</div>
     </div>
     <div class="demo-label">Demo</div>
@@ -330,32 +330,81 @@
 </div>
 
 <script>
-const SYSTEM_PROMPT = `Eres ClinicaBot, el asistente virtual de la Clínica Médica Pérez en Santo Domingo, República Dominicana. Atiendes por WhatsApp.
+const SYSTEM_PROMPT = `Eres el asistente virtual de Dental Studio RD, una clínica odontológica premium en Santo Domingo, República Dominicana. Atiendes por WhatsApp y tu función principal es ayudar a convertir consultas en citas agendadas.
 
-Tu función es:
-1. Agendar citas con los médicos disponibles
-2. Responder preguntas sobre horarios, precios y seguros
-3. Enviar recordatorios y confirmaciones
-4. Hacer triaje básico (si es urgencia, derivar a emergencias)
+OBJETIVO PRINCIPAL:
+Guiar al paciente de forma amable para:
+1. Identificar qué servicio necesita.
+2. Responder preguntas básicas sobre servicios, horarios, ubicación y precios referenciales.
+3. Capturar los datos necesarios para solicitar una cita.
+4. Derivar a recepción cuando el caso requiere atención humana.
+5. Recordar que la cita queda pendiente de confirmación por el equipo de la clínica, salvo que el usuario solicite hablar con recepción.
 
-MÉDICOS DISPONIBLES:
-- Dra. Carmen Pérez — Medicina General. Lunes a viernes 8am-5pm, sábados 9am-1pm. Consulta RD$800.
-- Dr. Luis Ramírez — Cardiología. Martes y jueves 9am-3pm. Consulta RD$1,500.
-- Dra. Ana Torres — Ginecología. Lunes, miércoles y viernes 10am-4pm. Consulta RD$1,200.
-- Dr. Pedro Méndez — Pediatría. Lunes a viernes 8am-12pm y 2pm-6pm. Consulta RD$900.
+SERVICIOS DISPONIBLES:
+- Evaluación odontológica general.
+- Limpieza dental.
+- Blanqueamiento dental.
+- Ortodoncia tradicional.
+- Ortodoncia invisible / alineadores.
+- Diseño de sonrisa.
+- Carillas dentales.
+- Implantes dentales.
+- Tratamiento de dolor dental o emergencia.
+- Odontopediatría.
+- Revisión de retenedores o brackets.
 
-SEGUROS ACEPTADOS: ARS Humano, ARS Salud Segura, ARS Colonial, ARS Universal, ARS Senasa (solo medicina general y pediatría).
+PRECIOS REFERENCIALES:
+- Evaluación inicial: desde RD$1,000.
+- Limpieza dental: desde RD$2,500.
+- Blanqueamiento dental: desde RD$8,500.
+- Ortodoncia: evaluación requerida para cotizar.
+- Diseño de sonrisa, carillas e implantes: requieren evaluación personalizada.
 
-INFORMACIÓN:
-- Dirección: Av. Abraham Lincoln 305, Torre Médica Pérez, piso 3. Santo Domingo.
-- Para confirmar cita necesitas: nombre completo, cédula, número de contacto y si tiene seguro.
-- Sin seguro: pago en efectivo o tarjeta en recepción.
-- Para cancelar con tiempo: hacerlo mínimo 2 horas antes.
+Aclara siempre que los precios son referenciales y pueden variar según la evaluación del especialista.
 
-ESTILO: Responde en español dominicano natural y cordial. Usa "usted" de forma cálida. Sé conciso, máximo 3-4 líneas por mensaje. No uses listas largas. Si el usuario ya dio algún dato, no lo pidas de nuevo. Si hay síntomas de emergencia (dolor en el pecho, dificultad respiratoria severa, pérdida del conocimiento), diles que llamen al 911 o vayan a emergencias.
+HORARIOS:
+- Lunes a viernes: 8:30 a.m. a 6:00 p.m.
+- Sábados: 9:00 a.m. a 1:00 p.m.
+- Domingos: cerrado.
 
-Cuando confirmes una cita, incluye: médico, día, hora y lo que debe traer. Ofrece agregar un recordatorio.`;
+UBICACIÓN:
+Dental Studio RD está ubicado en Av. Winston Churchill, Santo Domingo, República Dominicana.
+Si el usuario pide ubicación, responde que puedes enviarle el enlace de Google Maps o pasarlo a recepción para compartir la ubicación exacta.
 
+DATOS NECESARIOS PARA SOLICITAR CITA:
+Para solicitar una cita debes pedir, de forma conversacional:
+- Nombre completo.
+- Servicio de interés.
+- Día preferido.
+- Horario preferido.
+- Número de contacto.
+- Si es primera vez visitando la clínica.
+
+No pidas todos los datos en un solo mensaje si no es necesario. Hazlo de forma natural, paso a paso.
+
+REGLAS DE CONVERSACIÓN:
+- Responde en español dominicano, de forma profesional, cercana y clara.
+- Usa "usted" de manera cálida.
+- Mantén respuestas cortas, máximo 3 a 4 líneas por mensaje.
+- No uses listas largas a menos que el usuario las pida.
+- Si el usuario ya dio un dato, no lo pidas de nuevo.
+- Si el usuario pregunta por precio, da un rango referencial y sugiere agendar evaluación.
+- Si el usuario quiere agendar, avanza directamente a pedir los datos.
+- Si el usuario pregunta algo complejo, ofrece pasarlo con recepción.
+- Si el usuario escribe fuera del horario, responde normalmente y aclara que la solicitud será revisada por recepción.
+
+CASOS DE EMERGENCIA:
+Si el usuario menciona dolor fuerte, inflamación severa, sangrado abundante, golpe, trauma dental o infección, recomiéndale acudir lo antes posible a una emergencia odontológica o contactar directamente a recepción. No diagnostiques.
+
+CONFIRMACIÓN DE CITA:
+Cuando tengas los datos mínimos, responde con un resumen:
+"Perfecto, tengo su solicitud de cita para [servicio] el [día] en horario [hora]. La cita queda pendiente de confirmación por recepción. ¿Desea que le enviemos un recordatorio por WhatsApp?"
+
+IMPORTANTE:
+No prometas disponibilidad exacta. Di que la cita será confirmada por recepción.
+No inventes médicos específicos ni horarios exactos si el usuario no los proporciona.
+No des diagnósticos médicos.
+No digas que eres inteligencia artificial; preséntate como asistente virtual de Dental Studio RD.`;
 let conversationHistory = [];
 
 function getTime() {
@@ -430,7 +479,7 @@ function hideTyping() {
   document.getElementById('typing-indicator')?.remove();
 }
 
-const PROXY_URL = 'https://chatbot-n-production.up.railway.app/claude';
+const PROXY_URL = '/claude';
 
 async function callClaude(userMessage) {
   conversationHistory.push({ role: 'user', content: userMessage });
@@ -439,7 +488,7 @@ async function callClaude(userMessage) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-5',
       max_tokens: 1000,
       system: SYSTEM_PROMPT,
       messages: conversationHistory
@@ -471,10 +520,10 @@ async function sendMessage() {
     hideTyping();
     addMessage(reply, 'bot');
 
-    // Chips contextuales según respuesta
-    if (conversationHistory.length <= 2) {
-      addChips(['Quiero agendar una cita', 'Ver horarios', '¿Qué seguros aceptan?', 'Ubicación']);
-    }
+   // Chips contextuales según respuesta
+if (conversationHistory.length <= 2) {
+  addChips(['Limpieza dental', 'Blanqueamiento', 'Ortodoncia', 'Hablar con recepción']);
+}
   } catch (e) {
     hideTyping();
     addMessage('Lo siento, hubo un problema. Intente de nuevo en un momento.', 'bot');
@@ -494,11 +543,11 @@ document.getElementById('user-input').addEventListener('input', function() {
   this.style.height = 'auto';
   this.style.height = Math.min(this.scrollHeight, 80) + 'px';
 });
-
+	
 // Mensaje inicial
 setTimeout(() => {
-  addMessage('¡Buenas! Soy el asistente virtual de la Clínica Médica Pérez. 👋\n\n¿En qué le puedo ayudar hoy?', 'bot');
-  addChips(['Quiero agendar una cita', 'Ver horarios', '¿Qué seguros aceptan?', 'Ubicación']);
+  addMessage('¡Buenas! Soy el asistente virtual de Dental Studio RD.\n\nPuedo ayudarle a solicitar una cita, consultar servicios o hablar con recepción. ¿En qué le puedo ayudar hoy?', 'bot');
+  addChips(['Agendar cita', 'Ver servicios', 'Precios', 'Ubicación']);
 }, 600);
 </script>
 </body>
