@@ -1,554 +1,925 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dental Studio RD — Asistente de Citas</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgendaBot Dental — Asistente de Citas por WhatsApp</title>
 
-  :root {
-    --green: #1a7a4a;
-    --green-light: #e8f5ef;
-    --green-mid: #2d9e62;
-    --gray-bg: #f4f4f2;
-    --gray-border: #e2e2de;
-    --gray-text: #6b6b67;
-    --text: #1a1a18;
-    --white: #ffffff;
-    --bubble-bot: #ffffff;
-    --bubble-user: #1a7a4a;
-    --shadow: 0 2px 16px rgba(0,0,0,0.08);
-  }
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--gray-bg);
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-  }
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-  .phone-frame {
-    width: 375px;
-    height: 720px;
-    background: var(--white);
-    border-radius: 40px;
-    box-shadow: 0 24px 80px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,0,0,0.06);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-  }
+    :root {
+      --green: #0f6b46;
+      --green-dark: #08452d;
+      --green-soft: #e7f5ee;
+      --mint: #bff1d8;
+      --cream: #f7f4ed;
+      --white: #ffffff;
+      --text: #111816;
+      --muted: #61706a;
+      --border: #dfe7e2;
+      --shadow: 0 24px 70px rgba(15, 107, 70, 0.14);
+      --radius: 28px;
+    }
 
-  /* Header */
-  .chat-header {
-    background: var(--green);
-    padding: 16px 20px 14px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-shrink: 0;
-  }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      line-height: 1.5;
+    }
 
-  .back-arrow {
-    color: rgba(255,255,255,0.8);
-    font-size: 20px;
-    cursor: pointer;
-    line-height: 1;
-  }
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
 
-  .avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: var(--green-mid);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    flex-shrink: 0;
-    border: 2px solid rgba(255,255,255,0.25);
-  }
+    .page {
+      overflow: hidden;
+    }
 
-  .header-info { flex: 1; }
-  .header-name {
-    font-size: 15px;
-    font-weight: 500;
-    color: #fff;
-    line-height: 1.2;
-  }
-  .header-status {
-    font-size: 12px;
-    color: rgba(255,255,255,0.7);
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-  .status-dot {
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    background: #4ade80;
-    display: inline-block;
-  }
+    .container {
+      width: min(1120px, calc(100% - 40px));
+      margin: 0 auto;
+    }
 
-  /* Messages area */
-  .messages {
-    flex: 1;
-    overflow-y: auto;
-    padding: 16px 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    background: #ece5dd;
-    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c8bfb4' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-  }
+    header {
+      padding: 24px 0;
+      position: relative;
+      z-index: 10;
+    }
 
-  .messages::-webkit-scrollbar { width: 0; }
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
 
-  .msg-row {
-    display: flex;
-    align-items: flex-end;
-    gap: 6px;
-    animation: msgIn 0.25s ease-out;
-  }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      color: var(--green-dark);
+      letter-spacing: -0.03em;
+      font-size: 20px;
+    }
 
-  @keyframes msgIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 14px;
+      background: var(--green);
+      color: white;
+      display: grid;
+      place-items: center;
+      font-size: 20px;
+      box-shadow: 0 12px 30px rgba(15, 107, 70, 0.22);
+    }
 
-  .msg-row.user { flex-direction: row-reverse; }
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
 
-  .msg-avatar {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: var(--green);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 13px;
-    flex-shrink: 0;
-    align-self: flex-end;
-  }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 13px 20px;
+      font-weight: 700;
+      font-size: 15px;
+      transition: 0.2s ease;
+      cursor: pointer;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
 
-  .bubble {
-    max-width: 78%;
-    padding: 9px 13px;
-    border-radius: 18px;
-    font-size: 14px;
-    line-height: 1.5;
-    position: relative;
-    word-break: break-word;
-  }
+    .btn-primary {
+      background: var(--green);
+      color: white;
+      box-shadow: 0 16px 36px rgba(15, 107, 70, 0.22);
+    }
 
-  .bubble.bot {
-    background: var(--bubble-bot);
-    color: var(--text);
-    border-bottom-left-radius: 4px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-  }
+    .btn-primary:hover {
+      background: var(--green-dark);
+      transform: translateY(-2px);
+    }
 
-  .bubble.user {
-    background: #dcf8c6;
-    color: var(--text);
-    border-bottom-right-radius: 4px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-  }
+    .btn-secondary {
+      background: white;
+      color: var(--green-dark);
+      border-color: var(--border);
+    }
 
-  .bubble-time {
-    font-size: 10px;
-    color: #999;
-    text-align: right;
-    margin-top: 3px;
-    display: block;
-  }
+    .btn-secondary:hover {
+      border-color: var(--green);
+      transform: translateY(-2px);
+    }
 
-  /* Typing indicator */
-  .typing-row {
-    display: flex;
-    align-items: flex-end;
-    gap: 6px;
-  }
-  .typing-bubble {
-    background: var(--bubble-bot);
-    border-radius: 18px;
-    border-bottom-left-radius: 4px;
-    padding: 12px 16px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-    display: flex;
-    gap: 5px;
-    align-items: center;
-  }
-  .typing-dot {
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    background: #b0b0b0;
-    animation: typingDot 1.2s infinite;
-  }
-  .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-  .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-  @keyframes typingDot {
-    0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
-    30% { transform: translateY(-5px); opacity: 1; }
-  }
+    .hero {
+      padding: 60px 0 80px;
+      position: relative;
+    }
 
-  /* Quick reply chips */
-  .chips-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    padding: 4px 0 2px;
-    animation: msgIn 0.3s ease-out;
-  }
-  .chip {
-    background: var(--white);
-    border: 1.5px solid var(--green);
-    color: var(--green);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    font-weight: 500;
-    padding: 6px 14px;
-    border-radius: 99px;
-    cursor: pointer;
-    transition: all 0.15s;
-    white-space: nowrap;
-  }
-  .chip:hover {
-    background: var(--green);
-    color: #fff;
-  }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 54px;
+      align-items: center;
+    }
 
-  /* Input area */
-  .input-area {
-    background: #f0f0f0;
-    padding: 10px 12px;
-    display: flex;
-    gap: 8px;
-    align-items: flex-end;
-    flex-shrink: 0;
-    border-top: 1px solid var(--gray-border);
-  }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--green-soft);
+      color: var(--green-dark);
+      border: 1px solid rgba(15, 107, 70, 0.12);
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 22px;
+    }
 
-  .input-wrap {
-    flex: 1;
-    background: var(--white);
-    border-radius: 24px;
-    padding: 9px 16px;
-    display: flex;
-    align-items: center;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-  }
+    h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(44px, 6vw, 78px);
+      line-height: 0.95;
+      letter-spacing: -0.05em;
+      color: var(--text);
+      margin-bottom: 24px;
+    }
 
-  #user-input {
-    border: none;
-    outline: none;
-    background: transparent;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    color: var(--text);
-    width: 100%;
-    resize: none;
-    max-height: 80px;
-    line-height: 1.4;
-  }
+    .hero p {
+      font-size: 19px;
+      color: var(--muted);
+      max-width: 610px;
+      margin-bottom: 30px;
+    }
 
-  #user-input::placeholder { color: #aaa; }
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 30px;
+    }
 
-  .send-btn {
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    background: var(--green);
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.15s, transform 0.1s;
-    flex-shrink: 0;
-  }
-  .send-btn:hover { background: var(--green-mid); }
-  .send-btn:active { transform: scale(0.93); }
-  .send-btn svg { width: 18px; height: 18px; fill: #fff; }
+    .trust-row {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 14px;
+    }
 
-  /* Label */
-  .demo-label {
-    position: absolute;
-    top: 12px;
-    right: 16px;
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: .06em;
-    color: rgba(255,255,255,0.55);
-    text-transform: uppercase;
-  }
+    .trust-item {
+      display: flex;
+      gap: 7px;
+      align-items: center;
+    }
 
-  .date-divider {
-    text-align: center;
-    font-size: 11px;
-    color: #888;
-    background: rgba(255,255,255,0.6);
-    border-radius: 99px;
-    padding: 3px 12px;
-    align-self: center;
-    margin: 4px 0;
-  }
-</style>
+    .check {
+      color: var(--green);
+      font-weight: 800;
+    }
+
+    .mockup-wrap {
+      position: relative;
+      display: flex;
+      justify-content: center;
+    }
+
+    .phone {
+      width: 360px;
+      min-height: 680px;
+      background: #ffffff;
+      border-radius: 42px;
+      box-shadow: var(--shadow), 0 0 0 1px rgba(0,0,0,0.06);
+      overflow: hidden;
+      position: relative;
+      z-index: 2;
+    }
+
+    .phone-header {
+      background: var(--green);
+      color: white;
+      padding: 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .phone-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.18);
+      display: grid;
+      place-items: center;
+      font-size: 21px;
+      border: 1px solid rgba(255,255,255,0.25);
+    }
+
+    .phone-title {
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .phone-status {
+      font-size: 12px;
+      opacity: 0.75;
+    }
+
+    .chat-area {
+      background: #ece5dd;
+      padding: 18px 14px;
+      min-height: 560px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .bubble {
+      max-width: 82%;
+      padding: 11px 13px;
+      border-radius: 18px;
+      font-size: 14px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+    }
+
+    .bot {
+      background: white;
+      border-bottom-left-radius: 4px;
+      align-self: flex-start;
+    }
+
+    .user {
+      background: #dcf8c6;
+      border-bottom-right-radius: 4px;
+      align-self: flex-end;
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 4px;
+    }
+
+    .chip {
+      background: white;
+      border: 1px solid var(--green);
+      color: var(--green);
+      padding: 7px 11px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .floating-card {
+      position: absolute;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+      z-index: 3;
+      width: 220px;
+    }
+
+    .float-1 {
+      left: -10px;
+      top: 80px;
+    }
+
+    .float-2 {
+      right: -8px;
+      bottom: 80px;
+    }
+
+    .floating-card strong {
+      display: block;
+      color: var(--green-dark);
+      margin-bottom: 4px;
+      font-size: 15px;
+    }
+
+    .floating-card span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    section {
+      padding: 76px 0;
+    }
+
+    .section-title {
+      text-align: center;
+      max-width: 780px;
+      margin: 0 auto 44px;
+    }
+
+    .section-title h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(34px, 4vw, 56px);
+      line-height: 1;
+      letter-spacing: -0.04em;
+      margin-bottom: 16px;
+    }
+
+    .section-title p {
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .problem-grid,
+    .benefit-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      box-shadow: 0 12px 35px rgba(0,0,0,0.04);
+    }
+
+    .card-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 16px;
+      background: var(--green-soft);
+      color: var(--green);
+      display: grid;
+      place-items: center;
+      margin-bottom: 18px;
+      font-size: 22px;
+    }
+
+    .card h3 {
+      font-size: 21px;
+      letter-spacing: -0.03em;
+      margin-bottom: 10px;
+    }
+
+    .card p {
+      color: var(--muted);
+      font-size: 15.5px;
+    }
+
+    .flow {
+      background: var(--green-dark);
+      color: white;
+      border-radius: 36px;
+      padding: 46px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 36px;
+      align-items: center;
+    }
+
+    .flow h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(34px, 4vw, 54px);
+      line-height: 1;
+      letter-spacing: -0.04em;
+      margin-bottom: 16px;
+    }
+
+    .flow p {
+      color: rgba(255,255,255,0.76);
+      font-size: 18px;
+    }
+
+    .steps {
+      display: grid;
+      gap: 14px;
+    }
+
+    .step {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 20px;
+      padding: 18px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .step-number {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--mint);
+      color: var(--green-dark);
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      flex: 0 0 auto;
+    }
+
+    .step strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .step span {
+      color: rgba(255,255,255,0.72);
+      font-size: 14px;
+    }
+
+    .offer {
+      background: white;
+      border-radius: 36px;
+      border: 1px solid var(--border);
+      padding: 44px;
+      box-shadow: var(--shadow);
+      display: grid;
+      grid-template-columns: 1fr 0.8fr;
+      gap: 36px;
+      align-items: center;
+    }
+
+    .offer h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(34px, 4vw, 54px);
+      line-height: 1;
+      letter-spacing: -0.04em;
+      margin-bottom: 16px;
+    }
+
+    .offer p {
+      color: var(--muted);
+      font-size: 18px;
+      margin-bottom: 22px;
+    }
+
+    .included {
+      display: grid;
+      gap: 12px;
+    }
+
+    .included div {
+      display: flex;
+      gap: 10px;
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .price-card {
+      background: var(--green-soft);
+      border: 1px solid rgba(15, 107, 70, 0.15);
+      border-radius: 28px;
+      padding: 28px;
+    }
+
+    .price-label {
+      color: var(--green-dark);
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .price {
+      font-size: 38px;
+      font-weight: 800;
+      letter-spacing: -0.05em;
+      color: var(--green-dark);
+      margin-bottom: 8px;
+    }
+
+    .price-card p {
+      font-size: 15px;
+      margin-bottom: 20px;
+    }
+
+    .faq {
+      display: grid;
+      gap: 14px;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    details {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 20px 22px;
+    }
+
+    summary {
+      cursor: pointer;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    details p {
+      color: var(--muted);
+      margin-top: 12px;
+    }
+
+    .final-cta {
+      text-align: center;
+      background: var(--green);
+      color: white;
+      border-radius: 36px;
+      padding: 56px 30px;
+      box-shadow: var(--shadow);
+    }
+
+    .final-cta h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(36px, 4vw, 58px);
+      line-height: 1;
+      letter-spacing: -0.04em;
+      margin-bottom: 16px;
+    }
+
+    .final-cta p {
+      color: rgba(255,255,255,0.78);
+      max-width: 680px;
+      margin: 0 auto 28px;
+      font-size: 18px;
+    }
+
+    footer {
+      padding: 34px 0;
+      color: var(--muted);
+      font-size: 14px;
+      text-align: center;
+    }
+
+    @media (max-width: 980px) {
+      .hero-grid,
+      .flow,
+      .offer {
+        grid-template-columns: 1fr;
+      }
+
+      .mockup-wrap {
+        margin-top: 20px;
+      }
+
+      .problem-grid,
+      .benefit-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .floating-card {
+        display: none;
+      }
+
+      .nav-actions .btn-secondary {
+        display: none;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .container {
+        width: min(100% - 28px, 1120px);
+      }
+
+      .hero {
+        padding-top: 36px;
+      }
+
+      .phone {
+        width: 100%;
+        min-height: 620px;
+        border-radius: 32px;
+      }
+
+      .chat-area {
+        min-height: 500px;
+      }
+
+      .flow,
+      .offer,
+      .final-cta {
+        padding: 30px 22px;
+        border-radius: 28px;
+      }
+
+      .hero-actions {
+        align-items: stretch;
+      }
+
+      .hero-actions .btn {
+        width: 100%;
+      }
+
+      .nav {
+        align-items: flex-start;
+      }
+    }
+  </style>
 </head>
+
 <body>
+  <div class="page">
+    <header>
+      <div class="container nav">
+        <a href="#" class="brand">
+          <span class="brand-icon">🦷</span>
+          <span>AgendaBot Dental</span>
+        </a>
 
-<div class="phone-frame">
-  <div class="chat-header">
-    <div class="back-arrow">‹</div>
-    <div class="avatar">🦷</div>
-    <div class="header-info">
-      <div class="header-name">Dental Studio RD</div>
-      <div class="header-status"><span class="status-dot"></span> En línea</div>
-    </div>
-    <div class="demo-label">Asistente</div>
+        <div class="nav-actions">
+          <a href="demo.html" class="btn btn-secondary">Ver demo</a>
+          <a href="#piloto" class="btn btn-primary">Solicitar piloto</a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="container hero-grid">
+          <div>
+            <div class="eyebrow">🟢 Asistente de citas por WhatsApp para clínicas dentales</div>
+
+            <h1>Convierta mensajes de WhatsApp en solicitudes de cita organizadas</h1>
+
+            <p>
+              AgendaBot Dental ayuda a su recepción a responder más rápido, recopilar datos del paciente y entregar solicitudes listas para confirmar.
+            </p>
+
+            <div class="hero-actions">
+              <a href="demo.html" class="btn btn-primary">Probar demo interactiva</a>
+              <a href="#piloto" class="btn btn-secondary">Quiero una versión para mi clínica</a>
+            </div>
+
+            <div class="trust-row">
+              <div class="trust-item"><span class="check">✓</span> No reemplaza recepción</div>
+              <div class="trust-item"><span class="check">✓</span> Atiende fuera de horario</div>
+              <div class="trust-item"><span class="check">✓</span> Ideal para WhatsApp</div>
+            </div>
+          </div>
+
+          <div class="mockup-wrap">
+            <div class="floating-card float-1">
+              <strong>Respuesta inmediata</strong>
+              <span>El paciente recibe orientación sin esperar a recepción.</span>
+            </div>
+
+            <div class="phone">
+              <div class="phone-header">
+                <div class="phone-avatar">🦷</div>
+                <div>
+                  <div class="phone-title">Dental Studio RD</div>
+                  <div class="phone-status">En línea · Asistente</div>
+                </div>
+              </div>
+
+              <div class="chat-area">
+                <div class="bubble bot">
+                  ¡Buenas! Soy el asistente virtual de Dental Studio RD. ¿En qué le puedo ayudar hoy?
+                </div>
+
+                <div class="chip-row">
+                  <div class="chip">Agendar cita</div>
+                  <div class="chip">Ver servicios</div>
+                  <div class="chip">Precios</div>
+                </div>
+
+                <div class="bubble user">Agendar cita</div>
+
+                <div class="bubble bot">
+                  Con gusto. ¿Qué servicio desea agendar?
+                </div>
+
+                <div class="chip-row">
+                  <div class="chip">Limpieza dental</div>
+                  <div class="chip">Blanqueamiento</div>
+                  <div class="chip">Ortodoncia</div>
+                </div>
+
+                <div class="bubble user">Limpieza dental</div>
+
+                <div class="bubble bot">
+                  Perfecto. ¿Qué día y horario le conviene para solicitar la cita?
+                </div>
+
+                <div class="bubble user">Lunes a las 8:30 a.m.</div>
+
+                <div class="bubble bot">
+                  Excelente. Para continuar, ¿me permite su nombre completo y número de contacto?
+                </div>
+              </div>
+            </div>
+
+            <div class="floating-card float-2">
+              <strong>Datos organizados</strong>
+              <span>Servicio, fecha, horario, nombre y teléfono listos para confirmar.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="container">
+          <div class="section-title">
+            <h2>Su clínica ya recibe mensajes. El reto es convertirlos en citas.</h2>
+            <p>
+              El botón de WhatsApp abre la conversación. AgendaBot Dental ayuda a que esa conversación avance hasta una solicitud clara para recepción.
+            </p>
+          </div>
+
+          <div class="problem-grid">
+            <div class="card">
+              <div class="card-icon">⏱️</div>
+              <h3>Respuestas tardías</h3>
+              <p>Cuando recepción está ocupada o fuera de horario, muchos pacientes se enfrían o escriben a otra clínica.</p>
+            </div>
+
+            <div class="card">
+              <div class="card-icon">💬</div>
+              <h3>Preguntas repetidas</h3>
+              <p>Precios, horarios, ubicación, servicios y disponibilidad consumen tiempo todos los días.</p>
+            </div>
+
+            <div class="card">
+              <div class="card-icon">📋</div>
+              <h3>Solicitudes desorganizadas</h3>
+              <p>El paciente escribe por partes y recepción debe reconstruir la información antes de confirmar.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="container flow">
+          <div>
+            <h2>Un flujo simple para ayudar a recepción</h2>
+            <p>
+              El asistente guía al paciente paso a paso, recoge la información necesaria y deja la solicitud lista para confirmación humana.
+            </p>
+          </div>
+
+          <div class="steps">
+            <div class="step">
+              <div class="step-number">1</div>
+              <div>
+                <strong>El paciente escribe por WhatsApp</strong>
+                <span>Desde la web, Instagram, Google o campañas.</span>
+              </div>
+            </div>
+
+            <div class="step">
+              <div class="step-number">2</div>
+              <div>
+                <strong>El asistente identifica el servicio</strong>
+                <span>Limpieza, ortodoncia, blanqueamiento, emergencia u otro servicio.</span>
+              </div>
+            </div>
+
+            <div class="step">
+              <div class="step-number">3</div>
+              <div>
+                <strong>Recopila los datos del paciente</strong>
+                <span>Nombre, teléfono, día, hora y si es primera visita.</span>
+              </div>
+            </div>
+
+            <div class="step">
+              <div class="step-number">4</div>
+              <div>
+                <strong>Recepción solo confirma</strong>
+                <span>El equipo recibe una solicitud más clara y organizada.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="container">
+          <div class="section-title">
+            <h2>Beneficios para clínicas dentales</h2>
+            <p>
+              Diseñado para apoyar a recepción, mejorar la velocidad de respuesta y reducir oportunidades perdidas.
+            </p>
+          </div>
+
+          <div class="benefit-grid">
+            <div class="card">
+              <div class="card-icon">⚡</div>
+              <h3>Atención inmediata</h3>
+              <p>Responde en segundos y mantiene activo al paciente mientras recepción está ocupada.</p>
+            </div>
+
+            <div class="card">
+              <div class="card-icon">🦷</div>
+              <h3>Enfocado en odontología</h3>
+              <p>Adaptado a limpieza, ortodoncia, blanqueamiento, carillas, implantes y evaluaciones.</p>
+            </div>
+
+            <div class="card">
+              <div class="card-icon">🤝</div>
+              <h3>No reemplaza al equipo</h3>
+              <p>El asistente filtra y organiza. La confirmación final sigue en manos de recepción.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="piloto">
+        <div class="container offer">
+          <div>
+            <h2>Piloto de 30 días para validar en su clínica</h2>
+            <p>
+              Configure una versión adaptada a sus servicios, horarios, ubicación y preguntas frecuentes antes de comprometerse a largo plazo.
+            </p>
+
+            <div class="included">
+              <div><span class="check">✓</span> Configuración del asistente con el nombre de su clínica</div>
+              <div><span class="check">✓</span> Flujo para solicitudes de cita</div>
+              <div><span class="check">✓</span> Servicios, horarios, ubicación y precios referenciales</div>
+              <div><span class="check">✓</span> Ajustes durante el piloto</div>
+              <div><span class="check">✓</span> Entrega de solicitudes organizadas para recepción</div>
+            </div>
+          </div>
+
+          <div class="price-card">
+            <div class="price-label">Oferta de validación</div>
+            <div class="price">Piloto 30 días</div>
+            <p>
+              Ideal para probar si el asistente ayuda a mejorar la atención y organización de citas por WhatsApp.
+            </p>
+
+            <a href="demo.html" class="btn btn-primary" style="width:100%; margin-bottom:10px;">Probar demo</a>
+
+            <a href="https://wa.me/18094466230?text=Hola%2C%20quiero%20una%20demo%20de%20AgendaBot%20Dental%20para%20mi%20cl%C3%ADnica" class="btn btn-secondary" style="width:100%;">
+              Solicitar versión para mi clínica
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="container">
+          <div class="section-title">
+            <h2>Preguntas frecuentes</h2>
+          </div>
+
+          <div class="faq">
+            <details>
+              <summary>¿El asistente reemplaza a recepción?</summary>
+              <p>No. El objetivo es apoyar a recepción respondiendo preguntas repetidas, recopilando datos y dejando las solicitudes más organizadas.</p>
+            </details>
+
+            <details>
+              <summary>¿Se puede usar con el WhatsApp actual de la clínica?</summary>
+              <p>Sí, se puede evaluar. Para un piloto rápido también puede trabajarse con un número separado para no afectar la operación actual.</p>
+            </details>
+
+            <details>
+              <summary>¿La cita queda confirmada automáticamente?</summary>
+              <p>En la versión inicial, la cita queda pendiente de confirmación por recepción. Esto evita prometer horarios sin validar disponibilidad real.</p>
+            </details>
+
+            <details>
+              <summary>¿Cuánto tarda la implementación?</summary>
+              <p>Una versión piloto puede estar lista rápidamente si la clínica entrega servicios, horarios, ubicación y preguntas frecuentes.</p>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="container final-cta">
+          <h2>Pruebe cómo se vería en una clínica dental</h2>
+          <p>
+            Abra la demo interactiva y simule el recorrido de un paciente solicitando una cita por WhatsApp.
+          </p>
+
+          <div class="hero-actions" style="justify-content:center; margin-bottom:0;">
+            <a href="demo.html" class="btn btn-secondary">Probar demo interactiva</a>
+            <a href="#piloto" class="btn btn-primary" style="background:white; color:var(--green-dark);">Solicitar piloto</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="container">
+        AgendaBot Dental — Asistente de citas por WhatsApp para clínicas odontológicas.
+      </div>
+    </footer>
   </div>
-
-  <div class="messages" id="messages">
-    <div class="date-divider">Hoy</div>
-  </div>
-
-  <div class="input-area">
-    <div class="input-wrap">
-      <textarea id="user-input" placeholder="Escribe un mensaje..." rows="1"></textarea>
-    </div>
-    <button class="send-btn" onclick="sendMessage()">
-      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
-      </svg>
-    </button>
-  </div>
-</div>
-
-<script>
-const SYSTEM_PROMPT = `Eres el asistente virtual de Dental Studio RD, una clínica odontológica premium en Santo Domingo, República Dominicana. Atiendes por WhatsApp y tu función principal es ayudar a convertir consultas en citas agendadas.
-
-OBJETIVO PRINCIPAL:
-Guiar al paciente de forma amable para:
-1. Identificar qué servicio necesita.
-2. Responder preguntas básicas sobre servicios, horarios, ubicación y precios referenciales.
-3. Capturar los datos necesarios para solicitar una cita.
-4. Derivar a recepción cuando el caso requiere atención humana.
-5. Recordar que la cita queda pendiente de confirmación por el equipo de la clínica, salvo que el usuario solicite hablar con recepción.
-
-SERVICIOS DISPONIBLES:
-- Evaluación odontológica general.
-- Limpieza dental.
-- Blanqueamiento dental.
-- Ortodoncia tradicional.
-- Ortodoncia invisible / alineadores.
-- Diseño de sonrisa.
-- Carillas dentales.
-- Implantes dentales.
-- Tratamiento de dolor dental o emergencia.
-- Odontopediatría.
-- Revisión de retenedores o brackets.
-
-PRECIOS REFERENCIALES:
-- Evaluación inicial: desde RD$1,000.
-- Limpieza dental: desde RD$2,500.
-- Blanqueamiento dental: desde RD$8,500.
-- Ortodoncia: evaluación requerida para cotizar.
-- Diseño de sonrisa, carillas e implantes: requieren evaluación personalizada.
-
-Aclara siempre que los precios son referenciales y pueden variar según la evaluación del especialista.
-
-HORARIOS:
-- Lunes a viernes: 8:30 a.m. a 6:00 p.m.
-- Sábados: 9:00 a.m. a 1:00 p.m.
-- Domingos: cerrado.
-
-UBICACIÓN:
-Dental Studio RD está ubicado en Av. Winston Churchill, Santo Domingo, República Dominicana.
-Si el usuario pide ubicación, responde que puedes enviarle el enlace de Google Maps o pasarlo a recepción para compartir la ubicación exacta.
-
-DATOS NECESARIOS PARA SOLICITAR CITA:
-Para solicitar una cita debes pedir, de forma conversacional:
-- Nombre completo.
-- Servicio de interés.
-- Día preferido.
-- Horario preferido.
-- Número de contacto.
-- Si es primera vez visitando la clínica.
-
-No pidas todos los datos en un solo mensaje si no es necesario. Hazlo de forma natural, paso a paso.
-
-REGLAS DE CONVERSACIÓN:
-- Responde en español dominicano, de forma profesional, cercana y clara.
-- Usa "usted" de manera cálida.
-- Mantén respuestas cortas, máximo 3 a 4 líneas por mensaje.
-- No uses listas largas a menos que el usuario las pida.
-- Si el usuario ya dio un dato, no lo pidas de nuevo.
-- Si el usuario pregunta por precio, da un rango referencial y sugiere agendar evaluación.
-- Si el usuario quiere agendar, avanza directamente a pedir los datos.
-- Si el usuario pregunta algo complejo, ofrece pasarlo con recepción.
-- Si el usuario escribe fuera del horario, responde normalmente y aclara que la solicitud será revisada por recepción.
-
-CASOS DE EMERGENCIA:
-Si el usuario menciona dolor fuerte, inflamación severa, sangrado abundante, golpe, trauma dental o infección, recomiéndale acudir lo antes posible a una emergencia odontológica o contactar directamente a recepción. No diagnostiques.
-
-CONFIRMACIÓN DE CITA:
-Cuando tengas los datos mínimos, responde con un resumen:
-"Perfecto, tengo su solicitud de cita para [servicio] el [día] en horario [hora]. La cita queda pendiente de confirmación por recepción. ¿Desea que le enviemos un recordatorio por WhatsApp?"
-
-IMPORTANTE:
-No prometas disponibilidad exacta. Di que la cita será confirmada por recepción.
-No inventes médicos específicos ni horarios exactos si el usuario no los proporciona.
-No des diagnósticos médicos.
-No digas que eres inteligencia artificial; preséntate como asistente virtual de Dental Studio RD.`;
-let conversationHistory = [];
-
-function getTime() {
-  const now = new Date();
-  return now.toLocaleTimeString('es-DO', { hour: '2-digit', minute: '2-digit' });
-}
-
-function addMessage(text, role) {
-  const messages = document.getElementById('messages');
-  const row = document.createElement('div');
-  row.className = `msg-row ${role}`;
-
-  if (role === 'bot') {
-    const av = document.createElement('div');
-    av.className = 'msg-avatar';
-    av.textContent = '🦷';
-    row.appendChild(av);
-  }
-
-  const bubble = document.createElement('div');
-  bubble.className = `bubble ${role}`;
-  bubble.innerHTML = text.replace(/\n/g, '<br>') + `<span class="bubble-time">${getTime()}${role === 'user' ? ' ✓✓' : ''}</span>`;
-  row.appendChild(bubble);
-
-  messages.appendChild(row);
-  messages.scrollTop = messages.scrollHeight;
-}
-
-function addChips(options) {
-  const messages = document.getElementById('messages');
-  const row = document.createElement('div');
-  row.className = 'chips-row';
-  row.id = 'quick-chips';
-
-  options.forEach(opt => {
-    const chip = document.createElement('button');
-    chip.className = 'chip';
-    chip.textContent = opt;
-    chip.onclick = () => {
-      document.getElementById('quick-chips')?.remove();
-      document.getElementById('user-input').value = opt;
-      sendMessage();
-    };
-    row.appendChild(chip);
-  });
-
-  messages.appendChild(row);
-  messages.scrollTop = messages.scrollHeight;
-}
-
-function showTyping() {
-  const messages = document.getElementById('messages');
-  const row = document.createElement('div');
-  row.className = 'typing-row';
-  row.id = 'typing-indicator';
-
-  const av = document.createElement('div');
-  av.className = 'msg-avatar';
-  av.textContent = '🦷';
-  row.appendChild(av);
-
-  const bubble = document.createElement('div');
-  bubble.className = 'typing-bubble';
-  bubble.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
-  row.appendChild(bubble);
-
-  messages.appendChild(row);
-  messages.scrollTop = messages.scrollHeight;
-}
-
-function hideTyping() {
-  document.getElementById('typing-indicator')?.remove();
-}
-
-const PROXY_URL = '/claude';
-
-async function callClaude(userMessage) {
-  conversationHistory.push({ role: 'user', content: userMessage });
-
-  const response = await fetch(PROXY_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-5',
-      max_tokens: 1000,
-      system: SYSTEM_PROMPT,
-      messages: conversationHistory
-    })
-  });
-
-  const text = await response.text();
-  const data = JSON.parse(text);
-  if (data.error) throw new Error(data.error.message);
-  const reply = data.content[0].text;
-  conversationHistory.push({ role: 'assistant', content: reply });
-  return reply;
-}
-
-async function sendMessage() {
-  const input = document.getElementById('user-input');
-  const text = input.value.trim();
-  if (!text) return;
-
-  document.getElementById('quick-chips')?.remove();
-  input.value = '';
-  input.style.height = 'auto';
-
-  addMessage(text, 'user');
-  showTyping();
-
-  try {
-    const reply = await callClaude(text);
-    hideTyping();
-    addMessage(reply, 'bot');
-
-   // Chips contextuales según respuesta
-if (conversationHistory.length <= 2) {
-  addChips(['Limpieza dental', 'Blanqueamiento', 'Ortodoncia', 'Hablar con recepción']);
-}
-  } catch (e) {
-    hideTyping();
-    addMessage('Lo siento, hubo un problema. Intente de nuevo en un momento.', 'bot');
-  }
-}
-
-// Enter para enviar
-document.getElementById('user-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    sendMessage();
-  }
-});
-
-// Auto-resize textarea
-document.getElementById('user-input').addEventListener('input', function() {
-  this.style.height = 'auto';
-  this.style.height = Math.min(this.scrollHeight, 80) + 'px';
-});
-	
-// Mensaje inicial
-setTimeout(() => {
-  addMessage('¡Buenas! Soy el asistente virtual de Dental Studio RD.\n\nPuedo ayudarle a solicitar una cita, consultar servicios o hablar con recepción. ¿En qué le puedo ayudar hoy?', 'bot');
-  addChips(['Agendar cita', 'Ver servicios', 'Precios', 'Ubicación']);
-}, 600);
-</script>
 </body>
 </html>
